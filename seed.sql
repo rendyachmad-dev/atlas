@@ -2,13 +2,13 @@
 -- 7 sources, 100 articles, 100 ai_analysis, 19 opportunities, 8 trends
 
 INSERT INTO sources (id, name, type, category, url, language, country, is_active) VALUES
-  ('247d0734-b4cd-58dc-8cde-ee043d8582b2', 'Reuters', 'RSS', 'global-news', 'https://reuters.com', 'en', 'US', true),
-  ('fe28c0d8-317c-56a0-ae8d-26d5e10da376', 'TechCrunch', 'RSS', 'tech', 'https://techcrunch.com', 'en', 'US', true),
-  ('84391a0d-e825-5fd4-b0cb-e83a84924319', 'Hacker News', 'API', 'tech', 'https://news.ycombinator.com', 'en', 'US', true),
-  ('63473f80-d21b-5291-9b44-11017b05ebe2', 'OpenAI Blog', 'RSS', 'ai', 'https://openai.com/blog', 'en', 'US', true),
-  ('310aa3ce-796e-5174-8474-efa9fff0f123', 'Anthropic', 'RSS', 'ai', 'https://anthropic.com/blog', 'en', 'US', true),
-  ('cb20a383-463c-5680-b3c1-b0abbc3841b4', 'Katadata', 'RSS', 'business', 'https://katadata.co.id', 'id', 'ID', true),
-  ('f0c9a8a0-8d03-51d0-9438-0410deefb229', 'CNBC Indonesia', 'API', 'finance', 'https://cnbcindonesia.com', 'id', 'ID', true);
+  ('247d0734-b4cd-58dc-8cde-ee043d8582b2', 'Reuters', 'API', 'global-news', 'https://reuters.com', 'en', 'US', true),
+  ('fe28c0d8-317c-56a0-ae8d-26d5e10da376', 'TechCrunch', 'RSS', 'tech', 'https://techcrunch.com/feed/', 'en', 'US', true),
+  ('84391a0d-e825-5fd4-b0cb-e83a84924319', 'Hacker News', 'RSS', 'tech', 'https://news.ycombinator.com/rss', 'en', 'US', true),
+  ('63473f80-d21b-5291-9b44-11017b05ebe2', 'OpenAI Blog', 'RSS', 'ai', 'https://openai.com/news/rss.xml', 'en', 'US', true),
+  ('310aa3ce-796e-5174-8474-efa9fff0f123', 'Anthropic', 'RSS', 'ai', 'https://raw.githubusercontent.com/taobojlen/anthropic-rss-feed/main/anthropic_news_rss.xml', 'en', 'US', true),
+  ('cb20a383-463c-5680-b3c1-b0abbc3841b4', 'Katadata', 'RSS', 'business', 'https://katadata.co.id/rss', 'id', 'ID', true),
+  ('f0c9a8a0-8d03-51d0-9438-0410deefb229', 'CNBC Indonesia', 'RSS', 'finance', 'https://www.cnbcindonesia.com/rss', 'id', 'ID', true);
 
 INSERT INTO articles (id, source_id, external_id, title, url, author, published_at, content, content_hash, language, status) VALUES
   ('63f20630-b017-5575-9dc0-5d4389f92511', '247d0734-b4cd-58dc-8cde-ee043d8582b2', 'EXT-REUT-001', 'Fed holds rates steady amid mixed inflation signals', 'https://example.com/cnbcindonesia/1', 'John Doe', '2026-06-25 04:23:14+00:00', 'The Federal Reserve maintained its benchmark interest rate at 5.25-5.50% on Wednesday, citing persistent inflation although recent data showed signs of cooling. Markets expect a cut in September.', '1e5faa6096443c95393893b797a0e3e361ddda4dc185ef022d10e57d35b71023', 'en', 'analyzed'),

@@ -8,6 +8,26 @@ import (
 	"github.com/jackc/pgx/v5/pgxpool"
 )
 
+// SourceArticleCount holds article count per source.
+type SourceArticleCount struct {
+	SourceID   string
+	SourceName string
+	Total      int
+	New        int
+	Analyzed   int
+}
+
+// FetchLogSummary holds recent fetch log data for display.
+type FetchLogSummary struct {
+	SourceName      string
+	Status          string
+	ArticlesFetched int
+	ArticlesNew     int
+	ErrorMessage    *string
+	StartedAt       time.Time
+	CompletedAt     *time.Time
+}
+
 // Article represents a row from the articles table.
 type Article struct {
 	ID          string     `json:"id"`
@@ -79,6 +99,61 @@ func CreateFetchLog(ctx context.Context, pool *pgxpool.Pool, sourceID string) (*
 }
 
 // CompleteFetchLog updates a fetch log with final status and counts.
+// CountArticlesBySource returns article counts grouped by source.
+func CountArticlesBySource(ctx context.Context, pool *pgxpool.Pool) ([]SourceArticleCount, error) {
+	rows, err := pool.Query(ctx, `
+		SELECT s.id, s.name,
+		       COUNT(a.id) AS total,
+		       COUNT(*) FILTER (WHERE a.status = 'new') AS new,
+		       COUNT(*) FILTER (WHERE a.status = 'analyzed') AS analyzed
+		FROM sources s
+		LEFT JOIN articles a ON a.source_id = s.id
+		GROUP BY s.id, s.name
+		ORDER BY s.name
+	`)
+	if err != nil {
+		return nil, fmt.Errorf("count articles: %w", err)
+	}
+	defer rows.Close()
+
+	var results []SourceArticleCount
+	for rows.Next() {
+		var r SourceArticleCount
+		if err := rows.Scan(&r.SourceID, &r.SourceName, &r.Total, &r.New, &r.Analyzed); err != nil {
+			return nil, fmt.Errorf("scan count: %w", err)
+		}
+		results = append(results, r)
+	}
+	return results, rows.Err()
+}
+
+// ListRecentFetchLogs returns the most recent fetch logs, ordered by time DESC.
+func ListRecentFetchLogs(ctx context.Context, pool *pgxpool.Pool, limit int) ([]FetchLogSummary, error) {
+	rows, err := pool.Query(ctx, `
+		SELECT s.name, fl.status, fl.articles_fetched, fl.articles_new,
+		       fl.error_message, fl.started_at, fl.completed_at
+		FROM fetch_logs fl
+		JOIN sources s ON s.id = fl.source_id
+		ORDER BY fl.started_at DESC
+		LIMIT $1
+	`, limit)
+	if err != nil {
+		return nil, fmt.Errorf("list fetch logs: %w", err)
+	}
+	defer rows.Close()
+
+	var logs []FetchLogSummary
+	for rows.Next() {
+		var l FetchLogSummary
+		if err := rows.Scan(&l.SourceName, &l.Status, &l.ArticlesFetched, &l.ArticlesNew,
+			&l.ErrorMessage, &l.StartedAt, &l.CompletedAt); err != nil {
+			return nil, fmt.Errorf("scan fetch log: %w", err)
+		}
+		logs = append(logs, l)
+	}
+	return logs, rows.Err()
+}
+
 func CompleteFetchLog(ctx context.Context, pool *pgxpool.Pool, id, status string, fetched, new int, errMsg *string) error {
 	_, err := pool.Exec(ctx, `
 		UPDATE fetch_logs

@@ -5,6 +5,7 @@ import (
 	"crypto/sha256"
 	"fmt"
 	"log"
+	"net/http"
 	"time"
 
 	"atlas/internal/article"
@@ -81,6 +82,7 @@ func fetchSource(ctx context.Context, pool *pgxpool.Pool, s *source.Source) (int
 		errMsg := err.Error()
 		log.Printf("scheduler: fetch %s: %v", s.Name, err)
 		_ = article.CompleteFetchLog(ctx, pool, fl.ID, "failed", 0, 0, &errMsg)
+		_ = source.RecordFailure(ctx, pool, s.ID, nil, errMsg)
 		return 0, 0
 	}
 
@@ -100,7 +102,7 @@ func fetchSource(ctx context.Context, pool *pgxpool.Pool, s *source.Source) (int
 	totalFetched := len(feed.Items)
 	log.Printf("scheduler: %s — %d entries, %d new", s.Name, totalFetched, newCount)
 
-	_ = source.UpdateLastFetch(ctx, pool, s.ID)
+	_ = source.RecordSuccess(ctx, pool, s.ID, http.StatusOK, "application/rss+xml")
 	_ = article.CompleteFetchLog(ctx, pool, fl.ID, "success", totalFetched, newCount, nil)
 
 	return totalFetched, newCount
