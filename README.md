@@ -8,11 +8,10 @@ Help founders make better decisions.
 
 ## Status
 
-🚧 MVP Development
+✅ Sprint-1 Completed
 
-## Current Sprint
-
-Sprint-1 — RSS Collector
+**Current Version:** v0.1.0  
+**Current Milestone:** RSS Collector
 
 ## Stack
 
