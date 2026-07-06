@@ -1,0 +1,14 @@
+# Go build output
+/atlas
+/atlas.exe
+
+# IDE
+.idea/
+.vscode/
+*.swp
+*.swo
+
+# OS
+.DS_Store
+# stale binary
+/collector
