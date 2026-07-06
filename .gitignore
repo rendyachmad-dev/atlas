@@ -1,14 +1,14 @@
-# Go build output
-/atlas
-/atlas.exe
 
+# Go build output
 # IDE
+# OS
+# stale binary
+*.swo
+*.swp
+.DS_Store
 .idea/
 .vscode/
-*.swp
-*.swo
-
-# OS
-.DS_Store
-# stale binary
+/atlas
+/atlas.exe
 /collector
+dashboard
