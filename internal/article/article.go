@@ -28,6 +28,24 @@ type FetchLogSummary struct {
 	CompletedAt     *time.Time
 }
 
+// ReportItem is a full report entry joining article + analysis + opportunity + trend.
+type ReportItem struct {
+	Title          string
+	SummaryShort   *string
+	SummaryMedium  *string
+	BusinessImpact *string
+	Urgency        *int
+	TimeHorizon    *string
+	RiskScore      *int
+	Confidence     *float32
+	Opportunity    *string
+	OpportunityDesc *string
+	Trend          *string
+	SourceName     string
+	PublishedAt    *time.Time
+	ArticleURL     string
+}
+
 // Article represents a row from the articles table.
 type Article struct {
 	ID          string     `json:"id"`
@@ -152,6 +170,104 @@ func ListRecentFetchLogs(ctx context.Context, pool *pgxpool.Pool, limit int) ([]
 		logs = append(logs, l)
 	}
 	return logs, rows.Err()
+}
+
+// ListReports returns analyzed articles with full analysis, opportunities, and trends.
+func ListReports(ctx context.Context, pool *pgxpool.Pool, limit int) ([]ReportItem, error) {
+	rows, err := pool.Query(ctx, `
+		SELECT
+			a.title,
+			aa.summary_short,
+			aa.summary_medium,
+			aa.business_impact,
+			aa.urgency,
+			aa.time_horizon,
+			aa.risk_score,
+			aa.confidence,
+			o.title AS opp_title,
+			o.description AS opp_desc,
+			t.title AS trend_title,
+			s.name AS source_name,
+			a.published_at,
+			a.url
+		FROM articles a
+		JOIN sources s ON s.id = a.source_id
+		LEFT JOIN ai_analysis aa ON aa.article_id = a.id
+		LEFT JOIN opportunities o ON o.article_id = a.id
+		LEFT JOIN trend_article_links tal ON tal.article_id = a.id
+		LEFT JOIN trends t ON t.id = tal.trend_id
+		WHERE a.status = 'analyzed'
+		ORDER BY COALESCE(aa.urgency, 0) DESC, a.published_at DESC NULLS LAST
+		LIMIT $1
+	`, limit)
+	if err != nil {
+		return nil, fmt.Errorf("list reports: %w", err)
+	}
+	defer rows.Close()
+
+	var items []ReportItem
+	for rows.Next() {
+		var r ReportItem
+		if err := rows.Scan(
+			&r.Title, &r.SummaryShort, &r.SummaryMedium,
+			&r.BusinessImpact, &r.Urgency, &r.TimeHorizon,
+			&r.RiskScore, &r.Confidence,
+			&r.Opportunity, &r.OpportunityDesc,
+			&r.Trend, &r.SourceName, &r.PublishedAt, &r.ArticleURL,
+		); err != nil {
+			return nil, fmt.Errorf("scan report: %w", err)
+		}
+		items = append(items, r)
+	}
+	return items, rows.Err()
+}
+
+// ListRecentReports returns the most recent analyzed articles (no join on opp/trend),
+// for lightweight display.
+func ListRecentReports(ctx context.Context, pool *pgxpool.Pool, limit int) ([]ReportItem, error) {
+	rows, err := pool.Query(ctx, `
+		SELECT
+			a.title,
+			aa.summary_short,
+			aa.summary_medium,
+			aa.business_impact,
+			aa.urgency,
+			aa.time_horizon,
+			aa.risk_score,
+			aa.confidence,
+			NULL AS opp_title,
+			NULL AS opp_desc,
+			NULL AS trend_title,
+			s.name AS source_name,
+			a.published_at,
+			a.url
+		FROM articles a
+		JOIN sources s ON s.id = a.source_id
+		LEFT JOIN ai_analysis aa ON aa.article_id = a.id
+		WHERE a.status = 'analyzed'
+		ORDER BY a.published_at DESC NULLS LAST
+		LIMIT $1
+	`, limit)
+	if err != nil {
+		return nil, fmt.Errorf("list recent reports: %w", err)
+	}
+	defer rows.Close()
+
+	var items []ReportItem
+	for rows.Next() {
+		var r ReportItem
+		if err := rows.Scan(
+			&r.Title, &r.SummaryShort, &r.SummaryMedium,
+			&r.BusinessImpact, &r.Urgency, &r.TimeHorizon,
+			&r.RiskScore, &r.Confidence,
+			&r.Opportunity, &r.OpportunityDesc,
+			&r.Trend, &r.SourceName, &r.PublishedAt, &r.ArticleURL,
+		); err != nil {
+			return nil, fmt.Errorf("scan report: %w", err)
+		}
+		items = append(items, r)
+	}
+	return items, rows.Err()
 }
 
 func CompleteFetchLog(ctx context.Context, pool *pgxpool.Pool, id, status string, fetched, new int, errMsg *string) error {

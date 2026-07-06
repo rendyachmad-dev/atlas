@@ -36,6 +36,12 @@ func main() {
 				fmt.Sscanf(os.Args[2], "%d", &limit)
 			}
 			printLogs(ctx, pool, limit)
+		case "report", "reports":
+			limit := 20
+			if len(os.Args) > 2 {
+				fmt.Sscanf(os.Args[2], "%d", &limit)
+			}
+			printReports(ctx, pool, limit)
 		case "help", "-h", "--help":
 			printHelp()
 		default:
@@ -57,6 +63,7 @@ func printHelp() {
 	fmt.Println("  (no args)   Show full dashboard")
 	fmt.Println("  sources     Show sources table")
 	fmt.Println("  logs [N]    Show N most recent fetch logs (default 20)")
+	fmt.Println("  report [N]  Show N intelligence reports (default 20)")
 	fmt.Println("  help        Show this help")
 }
 
@@ -206,6 +213,68 @@ func printLogs(ctx context.Context, pool *pgxpool.Pool, limit int) {
 			l.StartedAt.Format("15:04:05 Jan 02"), completed, errMsg)
 	}
 	w.Flush()
+}
+
+func printReports(ctx context.Context, pool *pgxpool.Pool, limit int) {
+	reports, err := article.ListReports(ctx, pool, limit)
+	if err != nil {
+		log.Fatalf("reports: %v", err)
+	}
+
+	if len(reports) == 0 {
+		fmt.Println("No analyzed reports yet.")
+		return
+	}
+
+	printHeader(fmt.Sprintf("Intelligence Reports (top %d by urgency)", limit))
+	fmt.Println()
+
+	for _, r := range reports {
+		fmt.Printf("Title\n%s\n\n", r.Title)
+
+		if r.SummaryShort != nil {
+			fmt.Printf("Summary\n%s\n\n", *r.SummaryShort)
+		}
+
+		fmt.Printf("Source\n%s\n\n", r.SourceName)
+
+		if r.Urgency != nil {
+			urgencyLabel := "Low"
+			if *r.Urgency >= 8 {
+				urgencyLabel = "High"
+			} else if *r.Urgency >= 4 {
+				urgencyLabel = "Medium"
+			}
+			fmt.Printf("Urgency\n%d — %s\n\n", *r.Urgency, urgencyLabel)
+		}
+
+		if r.BusinessImpact != nil {
+			fmt.Printf("Business Impact\n%s\n\n", *r.BusinessImpact)
+		}
+
+		if r.TimeHorizon != nil {
+			fmt.Printf("Time Horizon\n%s\n\n", *r.TimeHorizon)
+		}
+
+		if r.Trend != nil {
+			fmt.Printf("Trend\n%s\n\n", *r.Trend)
+		}
+
+		if r.Opportunity != nil {
+			fmt.Printf("Opportunity\n%s\n", *r.Opportunity)
+			if r.OpportunityDesc != nil {
+				fmt.Printf("%s\n", *r.OpportunityDesc)
+			}
+			fmt.Println()
+		}
+
+		if r.PublishedAt != nil {
+			fmt.Printf("Published\n%s\n\n", r.PublishedAt.Format("Jan 02, 2006"))
+		}
+
+		fmt.Println("-----------------------------------")
+		fmt.Println()
+	}
 }
 
 func printHeader(title string) {
