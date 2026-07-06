@@ -1,5 +1,21 @@
 -- rss_atlas seed data
--- 7 sources, 100 articles, 100 ai_analysis, 19 opportunities, 8 trends
+-- 7 sources, 100 articles, 100 ai_analysis, 19 opportunities, 8 trends, 13 industries
+
+INSERT INTO industries (id, code, name, description, parent_id, is_active) VALUES
+  ('a1000001-0000-4000-8000-000000000001', 'healthcare',     'Healthcare',     NULL, NULL, true),
+  ('a1000001-0000-4000-8000-000000000002', 'agriculture',    'Agriculture',    NULL, NULL, true),
+  ('a1000001-0000-4000-8000-000000000003', 'livestock',      'Livestock',      NULL, NULL, true),
+  ('a1000001-0000-4000-8000-000000000004', 'energy',         'Energy',         NULL, NULL, true),
+  ('a1000001-0000-4000-8000-000000000005', 'mining',         'Mining',         NULL, NULL, true),
+  ('a1000001-0000-4000-8000-000000000006', 'finance',        'Finance',        NULL, NULL, true),
+  ('a1000001-0000-4000-8000-000000000007', 'education',      'Education',      NULL, NULL, true),
+  ('a1000001-0000-4000-8000-000000000008', 'cybersecurity',  'Cybersecurity',  NULL, NULL, true),
+  ('a1000001-0000-4000-8000-000000000009', 'manufacturing',  'Manufacturing',  NULL, NULL, true),
+  ('a1000001-0000-4000-8000-00000000000a', 'transportation', 'Transportation', NULL, NULL, true),
+  ('a1000001-0000-4000-8000-00000000000b', 'ai',             'AI',             NULL, NULL, true),
+  ('a1000001-0000-4000-8000-00000000000c', 'cloud',          'Cloud',          NULL, NULL, true),
+  ('a1000001-0000-4000-8000-00000000000d', 'government',     'Government',     NULL, NULL, true),
+  ('a1000001-0000-4000-8000-00000000000e', 'retail',         'Retail',         NULL, NULL, true);
 
 INSERT INTO sources (id, name, type, category, url, language, country, is_active) VALUES
   ('247d0734-b4cd-58dc-8cde-ee043d8582b2', 'Reuters', 'API', 'global-news', 'https://reuters.com', 'en', 'US', true),
