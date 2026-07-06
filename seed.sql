@@ -1,7 +1,31 @@
 -- rss_atlas seed data
--- 7 sources, 100 articles, 100 ai_analysis, 19 opportunities, 8 trends, 13 industries
+-- 7 sources, 100 articles, 100 ai_analysis, 19 opportunities, 8 trends, 14 industries, 7 stakeholders
 
 INSERT INTO industries (id, code, name, description, parent_id, is_active) VALUES
+  ('a1000001-0000-4000-8000-000000000001', 'healthcare',     'Healthcare',     NULL, NULL, true),
+  ('a1000001-0000-4000-8000-000000000002', 'agriculture',    'Agriculture',    NULL, NULL, true),
+  ('a1000001-0000-4000-8000-000000000003', 'livestock',      'Livestock',      NULL, NULL, true),
+  ('a1000001-0000-4000-8000-000000000004', 'energy',         'Energy',         NULL, NULL, true),
+  ('a1000001-0000-4000-8000-000000000005', 'mining',         'Mining',         NULL, NULL, true),
+  ('a1000001-0000-4000-8000-000000000006', 'finance',        'Finance',        NULL, NULL, true),
+  ('a1000001-0000-4000-8000-000000000007', 'education',      'Education',      NULL, NULL, true),
+  ('a1000001-0000-4000-8000-000000000008', 'cybersecurity',  'Cybersecurity',  NULL, NULL, true),
+  ('a1000001-0000-4000-8000-000000000009', 'manufacturing',  'Manufacturing',  NULL, NULL, true),
+  ('a1000001-0000-4000-8000-00000000000a', 'transportation', 'Transportation', NULL, NULL, true),
+  ('a1000001-0000-4000-8000-00000000000b', 'ai',             'AI',             NULL, NULL, true),
+  ('a1000001-0000-4000-8000-00000000000c', 'cloud',          'Cloud',          NULL, NULL, true),
+  ('a1000001-0000-4000-8000-00000000000d', 'government',     'Government',     NULL, NULL, true),
+  ('a1000001-0000-4000-8000-00000000000e', 'retail',         'Retail',         NULL, NULL, true);
+
+INSERT INTO stakeholders (id, code, name, description, is_active) VALUES
+  ('b2000001-0000-4000-8000-000000000001', 'government',  'Government',  NULL, true),
+  ('b2000001-0000-4000-8000-000000000002', 'startup',     'Startup',     NULL, true),
+  ('b2000001-0000-4000-8000-000000000003', 'sme',         'SME',         NULL, true),
+  ('b2000001-0000-4000-8000-000000000004', 'enterprise',  'Enterprise',  NULL, true),
+  ('b2000001-0000-4000-8000-000000000005', 'farmer',      'Farmer',      NULL, true),
+  ('b2000001-0000-4000-8000-000000000006', 'hospital',    'Hospital',    NULL, true),
+  ('b2000001-0000-4000-8000-000000000007', 'university',  'University',  NULL, true),
+  ('b2000001-0000-4000-8000-000000000008', 'investor',    'Investor',    NULL, true);
   ('a1000001-0000-4000-8000-000000000001', 'healthcare',     'Healthcare',     NULL, NULL, true),
   ('a1000001-0000-4000-8000-000000000002', 'agriculture',    'Agriculture',    NULL, NULL, true),
   ('a1000001-0000-4000-8000-000000000003', 'livestock',      'Livestock',      NULL, NULL, true),
