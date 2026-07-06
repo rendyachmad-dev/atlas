@@ -177,13 +177,13 @@ func ListReports(ctx context.Context, pool *pgxpool.Pool, limit int) ([]ReportIt
 	rows, err := pool.Query(ctx, `
 		SELECT
 			a.title,
-			aa.summary_short,
-			aa.summary_medium,
-			aa.business_impact,
-			aa.urgency,
-			aa.time_horizon,
-			aa.risk_score,
-			aa.confidence,
+			ar.summary,
+			NULL,
+			ar.business_impact,
+			ar.urgency,
+			NULL,
+			NULL,
+			ar.confidence,
 			o.title AS opp_title,
 			o.description AS opp_desc,
 			t.title AS trend_title,
@@ -192,12 +192,12 @@ func ListReports(ctx context.Context, pool *pgxpool.Pool, limit int) ([]ReportIt
 			a.url
 		FROM articles a
 		JOIN sources s ON s.id = a.source_id
-		LEFT JOIN ai_analysis aa ON aa.article_id = a.id
+		LEFT JOIN analysis_results ar ON ar.article_id = a.id
 		LEFT JOIN opportunities o ON o.article_id = a.id
 		LEFT JOIN trend_article_links tal ON tal.article_id = a.id
 		LEFT JOIN trends t ON t.id = tal.trend_id
 		WHERE a.status = 'analyzed'
-		ORDER BY COALESCE(aa.urgency, 0) DESC, a.published_at DESC NULLS LAST
+		ORDER BY COALESCE(ar.urgency, 0) DESC, a.published_at DESC NULLS LAST
 		LIMIT $1
 	`, limit)
 	if err != nil {
@@ -228,13 +228,13 @@ func ListRecentReports(ctx context.Context, pool *pgxpool.Pool, limit int) ([]Re
 	rows, err := pool.Query(ctx, `
 		SELECT
 			a.title,
-			aa.summary_short,
-			aa.summary_medium,
-			aa.business_impact,
-			aa.urgency,
-			aa.time_horizon,
-			aa.risk_score,
-			aa.confidence,
+			ar.summary,
+			NULL,
+			ar.business_impact,
+			ar.urgency,
+			NULL,
+			NULL,
+			ar.confidence,
 			NULL AS opp_title,
 			NULL AS opp_desc,
 			NULL AS trend_title,
@@ -243,7 +243,7 @@ func ListRecentReports(ctx context.Context, pool *pgxpool.Pool, limit int) ([]Re
 			a.url
 		FROM articles a
 		JOIN sources s ON s.id = a.source_id
-		LEFT JOIN ai_analysis aa ON aa.article_id = a.id
+		LEFT JOIN analysis_results ar ON ar.article_id = a.id
 		WHERE a.status = 'analyzed'
 		ORDER BY a.published_at DESC NULLS LAST
 		LIMIT $1
@@ -281,4 +281,112 @@ func CompleteFetchLog(ctx context.Context, pool *pgxpool.Pool, id, status string
 		return fmt.Errorf("complete fetch log: %w", err)
 	}
 	return nil
+}
+
+// WelcomeStats holds stats displayed on the welcome banner.
+type WelcomeStats struct {
+	AnalyzedYesterday int
+	EmergingTrends    int
+	Opportunities     int
+}
+
+// HighestConfidence holds the top-confidence analysis result.
+type HighestConfidence struct {
+	Title      string
+	Confidence float32
+}
+
+// RecommendedAction holds the top-urgency article recommendation.
+type RecommendedAction struct {
+	Title   string
+	Summary string
+	Urgency int
+}
+
+// CountAnalyzedYesterday returns articles analyzed in the previous calendar day (WIB).
+func CountAnalyzedYesterday(ctx context.Context, pool *pgxpool.Pool) (int, error) {
+	var count int
+	err := pool.QueryRow(ctx, `
+		SELECT COUNT(*)
+		FROM analysis_results
+		WHERE created_at >= date_trunc('day', now() AT TIME ZONE 'Asia/Jakarta' - interval '1 day') AT TIME ZONE 'Asia/Jakarta'
+		  AND created_at <  date_trunc('day', now() AT TIME ZONE 'Asia/Jakarta') AT TIME ZONE 'Asia/Jakarta'
+	`).Scan(&count)
+	if err != nil {
+		return 0, fmt.Errorf("count analyzed yesterday: %w", err)
+	}
+	return count, nil
+}
+
+// CountEmergingTrends returns the number of trends with status 'emerging'.
+func CountEmergingTrends(ctx context.Context, pool *pgxpool.Pool) (int, error) {
+	var count int
+	err := pool.QueryRow(ctx, `SELECT COUNT(*) FROM trends WHERE status = 'emerging'`).Scan(&count)
+	if err != nil {
+		return 0, fmt.Errorf("count emerging trends: %w", err)
+	}
+	return count, nil
+}
+
+// CountOpportunities returns the total number of opportunities.
+func CountOpportunities(ctx context.Context, pool *pgxpool.Pool) (int, error) {
+	var count int
+	err := pool.QueryRow(ctx, `SELECT COUNT(*) FROM opportunities`).Scan(&count)
+	if err != nil {
+		return 0, fmt.Errorf("count opportunities: %w", err)
+	}
+	return count, nil
+}
+
+// GetWelcomeStats returns all welcome banner stats.
+func GetWelcomeStats(ctx context.Context, pool *pgxpool.Pool) (*WelcomeStats, error) {
+	analyzed, err := CountAnalyzedYesterday(ctx, pool)
+	if err != nil {
+		return nil, err
+	}
+	trends, err := CountEmergingTrends(ctx, pool)
+	if err != nil {
+		return nil, err
+	}
+	opps, err := CountOpportunities(ctx, pool)
+	if err != nil {
+		return nil, err
+	}
+	return &WelcomeStats{
+		AnalyzedYesterday: analyzed,
+		EmergingTrends:    trends,
+		Opportunities:     opps,
+	}, nil
+}
+
+// GetHighestConfidence returns the article with the highest confidence analysis.
+func GetHighestConfidence(ctx context.Context, pool *pgxpool.Pool) (*HighestConfidence, error) {
+	var h HighestConfidence
+	err := pool.QueryRow(ctx, `
+		SELECT a.title, ar.confidence
+		FROM analysis_results ar
+		JOIN articles a ON a.id = ar.article_id
+		ORDER BY ar.confidence DESC
+		LIMIT 1
+	`).Scan(&h.Title, &h.Confidence)
+	if err != nil {
+		return nil, fmt.Errorf("highest confidence: %w", err)
+	}
+	return &h, nil
+}
+
+// GetRecommendedAction returns the highest-urgency analyzed article for recommendations.
+func GetRecommendedAction(ctx context.Context, pool *pgxpool.Pool) (*RecommendedAction, error) {
+	var r RecommendedAction
+	err := pool.QueryRow(ctx, `
+		SELECT a.title, COALESCE(ar.summary, ''), ar.urgency
+		FROM analysis_results ar
+		JOIN articles a ON a.id = ar.article_id
+		ORDER BY ar.urgency DESC
+		LIMIT 1
+	`).Scan(&r.Title, &r.Summary, &r.Urgency)
+	if err != nil {
+		return nil, fmt.Errorf("recommended action: %w", err)
+	}
+	return &r, nil
 }

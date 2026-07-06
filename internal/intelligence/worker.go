@@ -62,6 +62,15 @@ func (s *JobStore) ClaimNextJob(ctx context.Context, workerID string) (*Analysis
 	return &job, nil
 }
 
+// MarkArticleAnalyzed updates the article status to 'analyzed'.
+func (s *JobStore) MarkArticleAnalyzed(ctx context.Context, articleID string) error {
+	_, err := s.pool.Exec(ctx, `UPDATE articles SET status = 'analyzed' WHERE id = $1`, articleID)
+	if err != nil {
+		return fmt.Errorf("mark article analyzed: %w", err)
+	}
+	return nil
+}
+
 // CompleteJob marks a job as completed.
 func (s *JobStore) CompleteJob(ctx context.Context, jobID string) error {
 	_, err := s.pool.Exec(ctx, `
@@ -194,7 +203,11 @@ func (w *Worker) RunOnce(ctx context.Context) (bool, error) {
 		return true, nil
 	}
 
-	log.Printf("intelligence: job %s completed", job.ID)
+	if err := w.store.MarkArticleAnalyzed(ctx, job.ArticleID); err != nil {
+		log.Printf("intelligence: mark article analyzed: %v", err)
+	}
+
+	log.Printf("intelligence: job %s completed — article %s analyzed", job.ID, job.ArticleID)
 	return true, nil
 }
 
