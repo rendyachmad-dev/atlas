@@ -145,10 +145,23 @@ func (r *REPL) loop(ctx context.Context) {
 				fmt.Sscanf(args[0], "%d", &limit)
 			}
 			r.printReports(ctx, limit)
+		case "classify":
+			if len(args) < 1 {
+				fmt.Println("Usage: classify <article-uuid>")
+				fmt.Println("       !atlas classify --mock <uuid>")
+			} else {
+				fmt.Printf("Run '!atlas classify --mock %s' in terminal\n", args[0])
+			}
 		case "status":
 			r.printStatus(ctx)
 		case "analyze":
 			fmt.Println("Run 'atlas analyze --once --mock' in another terminal.")
+		case "extract":
+			fmt.Println("Run 'atlas extract --once --mock' in another terminal.")
+		case "evaluate":
+			fmt.Println("Run 'atlas evaluate --mock' in another terminal.")
+		case "fetch":
+			fmt.Println("Run 'atlas fetch' in another terminal.")
 		case "clear", "cls":
 			fmt.Print("\033[H\033[2J")
 		default:
@@ -165,8 +178,15 @@ func (r *REPL) printHelp() {
 	fmt.Println("  sources              List all sources")
 	fmt.Println("  logs [N]             Show recent fetch logs (default 10)")
 	fmt.Println("  reports [N]          Show intelligence reports (default 5)")
+	fmt.Println("  classify <uuid>      Classify article (industry/tech/country/stakeholder)")
+	fmt.Println("  evaluate             Evaluate extraction quality against golden dataset")
+	fmt.Println("  extract              Run taxonomy extraction pipeline")
+	fmt.Println("  analyze              Run article analysis pipeline")
+	fmt.Println("  fetch                Run RSS collector")
 	fmt.Println("  exit, quit, q        Exit")
 	fmt.Println("  clear, cls           Clear screen")
+	fmt.Println()
+	fmt.Println("Tip: prefix '!' for shell commands, e.g. '!atlas source discover antaranews.com'")
 	fmt.Println()
 }
 

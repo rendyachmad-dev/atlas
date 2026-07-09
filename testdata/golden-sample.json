@@ -1,0 +1,139 @@
+{
+  "name": "sample-mini",
+  "records": [
+    {
+      "id": "rec-001",
+      "title": "AI Startup Raises $500M for Cloud Computing Platform",
+      "content": "A Silicon Valley-based AI startup has raised $500 million in Series D funding to expand its cloud computing platform. The company, which specializes in generative AI and machine learning solutions, plans to use the funding to build new data centers in Southeast Asia, particularly in Singapore and Indonesia. The investment round was led by a major US venture capital firm, with participation from existing investors including Microsoft and Google.",
+      "url": "https://example.com/ai-startup-funding",
+      "source": "TechCrunch",
+      "expected": {
+        "topics": [
+          {"code": "generative-ai", "confidence": 0.95},
+          {"code": "machine-learning", "confidence": 0.9},
+          {"code": "cloud-computing", "confidence": 0.85}
+        ],
+        "industries": [
+          {"code": "tech", "confidence": 0.95},
+          {"code": "finance", "confidence": 0.7}
+        ],
+        "countries": [
+          {"code": "US", "confidence": 0.95},
+          {"code": "SG", "confidence": 0.85},
+          {"code": "ID", "confidence": 0.85}
+        ],
+        "technologies": [
+          {"code": "ai", "confidence": 0.95},
+          {"code": "cloud", "confidence": 0.9},
+          {"code": "generative-ai", "confidence": 0.85}
+        ],
+        "organizations": [
+          {"code": "microsoft", "confidence": 0.9},
+          {"code": "google", "confidence": 0.9}
+        ]
+      }
+    },
+    {
+      "id": "rec-002",
+      "title": "New Cybersecurity Regulations Impact European Fintech Firms",
+      "content": "The European Union has announced new cybersecurity regulations that will require fintech companies to implement stronger data protection measures. The regulations, which take effect next year, mandate regular security audits and breach notification within 24 hours. Industry analysts say the rules will increase compliance costs but ultimately strengthen consumer trust in digital financial services. The UK's Financial Conduct Authority has indicated it will adopt similar standards.",
+      "url": "https://example.com/eu-cybersecurity-fintech",
+      "source": "Reuters",
+      "expected": {
+        "topics": [
+          {"code": "cybersecurity", "confidence": 0.95},
+          {"code": "fintech", "confidence": 0.9},
+          {"code": "ai-regulation", "confidence": 0.7}
+        ],
+        "industries": [
+          {"code": "finance", "confidence": 0.95},
+          {"code": "tech", "confidence": 0.8}
+        ],
+        "countries": [
+          {"code": "GB", "confidence": 0.9},
+          {"code": "DE", "confidence": 0.85}
+        ],
+        "technologies": [
+          {"code": "cybersecurity", "confidence": 0.95},
+          {"code": "fintech", "confidence": 0.85}
+        ],
+        "organizations": []
+      }
+    },
+    {
+      "id": "rec-003",
+      "title": "Japan's Renewable Energy Push Drives Biotechnology Innovation",
+      "content": "Japan is investing heavily in renewable energy infrastructure, with a focus on combining solar power with biotechnology research. The Ministry of Economy, Trade and Industry has allocated $2 billion for joint research projects between universities and private companies. Researchers are developing bio-based solar panels that are more efficient and environmentally friendly than traditional silicon-based panels. The initiative is part of Japan's broader strategy to achieve carbon neutrality by 2050.",
+      "url": "https://example.com/japan-renewable-biotech",
+      "source": "Nikkei Asia",
+      "expected": {
+        "topics": [
+          {"code": "renewable-energy", "confidence": 0.95},
+          {"code": "biotechnology", "confidence": 0.9}
+        ],
+        "industries": [
+          {"code": "energy", "confidence": 0.95},
+          {"code": "healthcare", "confidence": 0.6}
+        ],
+        "countries": [
+          {"code": "JP", "confidence": 0.95}
+        ],
+        "technologies": [
+          {"code": "iot", "confidence": 0.5}
+        ],
+        "organizations": [
+          {"code": "united-nations", "confidence": 0.3}
+        ]
+      }
+    },
+    {
+      "id": "rec-004",
+      "title": "Supply Chain Disruptions Affect Global Manufacturing",
+      "content": "Persistent supply chain disruptions continue to impact manufacturing sectors worldwide. The semiconductor shortage, now in its third year, has forced automotive and electronics manufacturers to reduce production volumes. Companies are diversifying their supplier networks and increasing inventory buffers to mitigate future risks. Industry experts say the trend toward regionalized manufacturing, or 'reshoring', is accelerating as companies seek greater supply chain resilience.",
+      "url": "https://example.com/supply-chain-manufacturing",
+      "source": "Financial Times",
+      "expected": {
+        "topics": [
+          {"code": "supply-chain-mfg", "confidence": 0.95},
+          {"code": "cloud-computing", "confidence": 0.3}
+        ],
+        "industries": [
+          {"code": "manufacturing", "confidence": 0.95},
+          {"code": "tech", "confidence": 0.7}
+        ],
+        "countries": [],
+        "technologies": [
+          {"code": "iot", "confidence": 0.6}
+        ],
+        "organizations": []
+      }
+    },
+    {
+      "id": "rec-005",
+      "title": "Blockchain and Edtech: Transforming Education in Developing Nations",
+      "content": "Blockchain technology is being deployed to verify educational credentials in developing countries, where traditional certification systems often lack transparency. A partnership between the United Nations and several blockchain startups aims to create a decentralized ledger for academic records in India and Indonesia. The system uses smart contracts to automate verification, reducing fraud and making it easier for students to prove their qualifications to employers abroad.",
+      "url": "https://example.com/blockchain-edtech",
+      "source": "BBC News",
+      "expected": {
+        "topics": [
+          {"code": "blockchain", "confidence": 0.95},
+          {"code": "edtech", "confidence": 0.9}
+        ],
+        "industries": [
+          {"code": "tech", "confidence": 0.9},
+          {"code": "agriculture", "confidence": 0.2}
+        ],
+        "countries": [
+          {"code": "IN", "confidence": 0.9},
+          {"code": "ID", "confidence": 0.9}
+        ],
+        "technologies": [
+          {"code": "blockchain", "confidence": 0.95}
+        ],
+        "organizations": [
+          {"code": "united-nations", "confidence": 0.95}
+        ]
+      }
+    }
+  ]
+}
