@@ -83,7 +83,7 @@ func callLLM(ctx context.Context, apiKey, model string, article Article) (*Knowl
 	}
 
 	// Initialize nil slices to empty.
-	normalizeKnowledge(&k)
+	NormalizeKnowledge(&k)
 
 	return &k, nil
 }
@@ -234,8 +234,8 @@ func ResolveAndInsert(ctx context.Context, pool *pgxpool.Pool, articleID string,
 	return tx.Commit(ctx)
 }
 
-// normalizeKnowledge ensures all slices are non-nil.
-func normalizeKnowledge(k *Knowledge) {
+// NormalizeKnowledge ensures all slices are non-nil.
+func NormalizeKnowledge(k *Knowledge) {
 	if k.Topics == nil {
 		k.Topics = []Entity{}
 	}

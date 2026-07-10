@@ -13,3 +13,7 @@
 /collector
 dashboard
 intelligence
+
+# Environment files — contain API keys, never commit
+.env
+.env.local

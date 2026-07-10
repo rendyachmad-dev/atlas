@@ -151,7 +151,7 @@ func TestValidateKnowledge_NilFields(t *testing.T) {
 		Organizations: nil,
 	}
 
-	normalizeKnowledge(k)
+	NormalizeKnowledge(k)
 	err := ValidateKnowledge(k)
 	if err != nil {
 		t.Errorf("expected nil error after normalization, got: %v", err)

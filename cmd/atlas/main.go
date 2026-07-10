@@ -27,6 +27,8 @@ func main() {
 		runExtract()
 	case "evaluate":
 		runEvaluate()
+	case "detect":
+		runDetect()
 	case "classify":
 		runClassify()
 	case "source":
