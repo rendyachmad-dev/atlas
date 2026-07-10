@@ -13,22 +13,30 @@ type Provider interface {
 
 // ProviderConfig holds configuration for creating a Provider.
 type ProviderConfig struct {
-	Mock   bool
-	APIKey string
-	Model  string
+	Mock     bool
+	Provider string // "anthropic" (default) or "groq"
+	APIKey   string
+	Model    string
 }
 
 // New creates a Provider based on config.
-// Returns AnthropicExtractor by default, MockProvider when cfg.Mock is true.
+// Supports: mock, anthropic, groq.
 // Errors if neither mock nor API key is set.
 func New(cfg ProviderConfig) (Provider, error) {
 	if cfg.Mock {
 		return NewMockProvider(true), nil
 	}
 	if cfg.APIKey == "" {
-		return nil, fmt.Errorf("ANTHROPIC_API_KEY not set — use MockProvider or set ANTHROPIC_API_KEY env var")
+		return nil, fmt.Errorf("API key not set — use MockProvider or set LLM_API_KEY env var")
 	}
-	return NewAnthropicExtractor(cfg.APIKey, cfg.Model), nil
+	switch cfg.Provider {
+	case "groq":
+		return NewGroqExtractor(cfg.APIKey, cfg.Model), nil
+	case "anthropic", "":
+		return NewAnthropicExtractor(cfg.APIKey, cfg.Model), nil
+	default:
+		return nil, fmt.Errorf("unknown provider: %q (supported: anthropic, groq)", cfg.Provider)
+	}
 }
 
 // MockProvider returns deterministic fake extraction data.

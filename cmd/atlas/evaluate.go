@@ -54,15 +54,16 @@ func runEvaluate() {
 
 	// Create provider.
 	provider, err := extract.New(extract.ProviderConfig{
-		Mock:   *mock,
-		APIKey: cfg.AnthropicAPIKey,
-		Model:  cfg.AnthropicModel,
+		Mock:     *mock,
+		Provider: cfg.LLMProvider,
+		APIKey:   cfg.LLMAPIKey,
+		Model:    cfg.LLMModel,
 	})
 	if err != nil {
 		log.Fatal(err)
 	}
 
-	model := cfg.AnthropicModel
+	model := cfg.LLMModel
 	if providerName := providerName(provider); providerName == "mock" {
 		model = "mock-v1"
 	}
@@ -93,6 +94,8 @@ func providerName(p extract.Provider) string {
 		return "mock"
 	case *extract.AnthropicExtractor:
 		return "anthropic"
+	case *extract.GroqExtractor:
+		return "groq"
 	default:
 		return "unknown"
 	}

@@ -61,9 +61,10 @@ func runExtract() {
 	defer pool.Close()
 
 	provider, err := extract.New(extract.ProviderConfig{
-		Mock:   *mock,
-		APIKey: cfg.AnthropicAPIKey,
-		Model:  cfg.AnthropicModel,
+		Mock:     *mock,
+		Provider: cfg.LLMProvider,
+		APIKey:   cfg.LLMAPIKey,
+		Model:    cfg.LLMModel,
 	})
 	if err != nil {
 		log.Fatal(err)

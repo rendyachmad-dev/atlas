@@ -230,6 +230,8 @@ func providerNameOf(p extract.Provider) string {
 		return "mock"
 	case *extract.AnthropicExtractor:
 		return "anthropic"
+	case *extract.GroqExtractor:
+		return "groq"
 	default:
 		return fmt.Sprintf("%T", p)
 	}

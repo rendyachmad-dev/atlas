@@ -160,6 +160,8 @@ func (r *REPL) loop(ctx context.Context) {
 			fmt.Println("Run 'atlas extract --once --mock' in another terminal.")
 		case "evaluate":
 			fmt.Println("Run 'atlas evaluate --mock' in another terminal.")
+		case "benchmark":
+			fmt.Println("Run 'atlas benchmark --providers mock,groq' in another terminal.")
 		case "detect":
 			fmt.Println("Run 'atlas detect --all' in another terminal.")
 		case "fetch":
@@ -182,6 +184,7 @@ func (r *REPL) printHelp() {
 	fmt.Println("  reports [N]          Show intelligence reports (default 5)")
 	fmt.Println("  classify <uuid>      Classify article (industry/tech/country/stakeholder)")
 	fmt.Println("  evaluate             Evaluate extraction quality against golden dataset")
+		fmt.Println("  benchmark            Benchmark multiple providers against golden dataset")
 		fmt.Println("  detect               Detect business signals from extraction results")
 	fmt.Println("  extract              Run taxonomy extraction pipeline")
 	fmt.Println("  analyze              Run article analysis pipeline")
